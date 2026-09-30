@@ -19,7 +19,14 @@ import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  //   const { messages }: { messages: UIMessage[] } = await req.json();
+
+  const body = (await req.json()) as { messages?: UIMessage[] };
+
+  if (!Array.isArray(body.messages)) {
+    return new Response("Body must contain a messages array", { status: 400 });
+  }
+  const messages = body.messages;
 
   const result = streamText({
     model: openai("gpt-4o-mini"),
